@@ -1,0 +1,39 @@
+/* PDF Page Numbers Plugin Styles */
+
+/* ── Screen: hide page number elements ── */
+.pdf-page-number {
+	display: none;
+}
+
+/* ── Print: show page number elements ── */
+@media print {
+	.pdf-page-number {
+		display: block !important;
+		position: relative;
+		width: 100%;
+		text-align: center;
+		font-size: 10pt;
+		color: #666666;
+		z-index: 9999;
+		padding: 8px 0;
+		margin-top: 12px;
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+	}
+
+	.pdf-page-number.skip {
+		visibility: hidden;
+	}
+}
+
+/* ── Settings tab styling ── */
+.pdf-page-numbers-preview {
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 6px;
+	padding: 16px;
+	margin: 12px 0;
+	text-align: center;
+	background: var(--background-secondary);
+	font-size: 10pt;
+	color: var(--text-muted);
+}
