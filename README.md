@@ -5,10 +5,15 @@ Adds configurable page numbers to your PDF exports from Obsidian.
 ## Features
 
 - **Automatic page numbering** — every page in your exported PDF gets a number
+- **Built into the native export flow** — adds a page-number toggle to Obsidian's PDF export dialog
 - **Multiple positions** — bottom-center, bottom-left, bottom-right, top-center, top-left, top-right
 - **Flexible formats** — "1", "Page 1 of 5", or a custom template
 - **Skip first page** — optionally hide the number on page 1 (title pages)
-- **Configurable style** — font size, color, margins
+- **Configurable style** — font size, color, and margins
+
+## Requirements
+
+- Obsidian desktop `1.12.4` or newer
 
 ## Installation
 
@@ -29,17 +34,20 @@ Then copy `main.js`, `manifest.json`, and `styles.css` into your vault's plugin 
 ## Usage
 
 1. Open a note
-2. Use the command palette → **"Export to PDF with page numbers"**
-3. Or use the normal **Export to PDF** — the plugin hooks into the print pipeline automatically
+2. Choose **Export to PDF**
+3. Enable or disable **Page numbers** in the export dialog
+4. Export the PDF
 
 ## Settings
 
 | Setting | Description | Default |
 |---------|-------------|---------|
+| Enable page numbers | Turn page numbers on or off | On |
 | Position | Where on the page | Bottom Center |
 | Format | Number format | Page X of Y |
 | Custom format | Template with `{{page}}` and `{{total}}` | `Page {{page}} of {{total}}` |
 | Font size | Size in points | 10 |
+| Font family | Font used for page numbers | `sans-serif` |
 | Color | Hex color | `#666666` |
 | Skip first page | Hide number on page 1 | Off |
 | Bottom margin | Pixels from bottom edge | 20 |
@@ -48,12 +56,9 @@ Then copy `main.js`, `manifest.json`, and `styles.css` into your vault's plugin 
 
 ## How It Works
 
-The plugin uses two strategies to ensure page numbers appear reliably:
+Obsidian `1.12.4` exports PDFs from a hidden popup window rather than the main note view. This plugin patches that popup's print flow so it can inject page-number header/footer options at export time.
 
-1. **`beforeprint` / `afterprint` events** — Injects page-number elements into the print DOM just before rendering, then cleans them up afterward.
-2. **Workspace method patching** — Wraps Obsidian's internal PDF export method as a fallback for cases where window print events aren't fired.
-
-Page numbers are injected as DOM elements (`.pdf-page-number`) that are only visible in `@media print`. They're placed at each page boundary detected through Obsidian's page-break markers.
+The plugin also keeps a DOM-based fallback for Obsidian print views, but the primary path is the hidden export popup used by the built-in PDF dialog.
 
 ## License
 
