@@ -46,9 +46,7 @@ export class PdfPageNumbersSettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 		containerEl.empty();
 
-		new Setting(containerEl)
-			.setName("PDF page numbers")
-			.setHeading();
+		new Setting(containerEl).setName("Page numbers").setHeading();
 
 		new Setting(containerEl)
 			.setName("Enable page numbers")
@@ -135,10 +133,10 @@ export class PdfPageNumbersSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("Font family")
-			.setDesc("CSS font family for page numbers")
+			.setDesc("Font family for page numbers")
 			.addText((text) =>
 				text
-					.setPlaceholder("sans-serif")
+					.setPlaceholder("Sans-serif")
 					.setValue(this.plugin.settings.fontFamily)
 					.onChange(async (value) => {
 						this.plugin.settings.fontFamily =

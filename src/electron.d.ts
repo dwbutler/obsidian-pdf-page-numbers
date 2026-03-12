@@ -22,7 +22,7 @@ declare module "electron" {
 	}
 
 	interface WebContents {
-		printToPDF(options: PrintToPDFOptions): Promise<Buffer>;
+		printToPDF(options: PrintToPDFOptions): Promise<Uint8Array>;
 	}
 
 	interface Remote {

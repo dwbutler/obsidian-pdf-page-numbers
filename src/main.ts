@@ -22,7 +22,7 @@ import type { PrintToPDFOptions, WebContents } from "electron";
 export default class PdfPageNumbersPlugin extends Plugin {
 	settings: PdfPageNumbersSettings = DEFAULT_SETTINGS;
 	private originalPrintToPDF:
-		| ((options: PrintToPDFOptions) => Promise<Buffer>)
+		| ((options: PrintToPDFOptions) => Promise<Uint8Array>)
 		| null = null;
 	private patchedWebContents: WebContents | null = null;
 
@@ -37,11 +37,9 @@ export default class PdfPageNumbersPlugin extends Plugin {
 	}
 
 	async loadSettings(): Promise<void> {
-		this.settings = Object.assign(
-			{},
-			DEFAULT_SETTINGS,
-			await this.loadData()
-		);
+		const loaded: unknown = await this.loadData();
+		const data = (loaded ?? {}) as Partial<PdfPageNumbersSettings>;
+		this.settings = { ...DEFAULT_SETTINGS, ...data };
 	}
 
 	async saveSettings(): Promise<void> {
@@ -133,18 +131,25 @@ export default class PdfPageNumbersPlugin extends Plugin {
 		}
 
 		this.patchedWebContents = webContents;
-		const origFn: (options: PrintToPDFOptions) => Promise<Buffer> =
-			webContents.printToPDF.bind(webContents);
+
+		// Capture the original method before we replace it.
+		const origFn = webContents.printToPDF.bind(webContents) as (
+			options: PrintToPDFOptions
+		) => Promise<Uint8Array>;
+
 		this.originalPrintToPDF = origFn;
 
-		const plugin = this;
+		// Use an arrow function to capture `this` without aliasing
+		const getEnabled = (): boolean => this.settings.enabled;
+		const getPosition = (): string => this.settings.position;
+		const buildTmpl = (): string => this.buildTemplate();
 
-		webContents.printToPDF = function (
+		webContents.printToPDF = (
 			options: PrintToPDFOptions
-		): Promise<Buffer> {
-			if (plugin.settings.enabled) {
-				const isTop = plugin.settings.position.startsWith("top");
-				const template = plugin.buildTemplate();
+		): Promise<Uint8Array> => {
+			if (getEnabled()) {
+				const isTop = getPosition().startsWith("top");
+				const template = buildTmpl();
 				const emptyTemplate = "<span></span>";
 
 				return origFn({
@@ -163,7 +168,9 @@ export default class PdfPageNumbersPlugin extends Plugin {
 			this.restorePrintToPDF();
 		});
 
-		console.log("PDF Page Numbers: patched printToPDF successfully");
+		console.debug(
+			"PDF Page Numbers: patched printToPDF successfully"
+		);
 	}
 
 	private restorePrintToPDF(): void {
