@@ -1,7 +1,7 @@
 {
 	"id": "pdf-page-numbers",
 	"name": "PDF Page Numbers",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"minAppVersion": "1.12.4",
 	"description": "Adds page numbers to PDF exports (e.g. 'Page 1 of 5').",
 	"author": "David Butler",
