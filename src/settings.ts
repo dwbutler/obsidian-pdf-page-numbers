@@ -17,8 +17,6 @@ export interface PdfPageNumbersSettings {
 	customFormat: string;
 	fontSize: number;
 	fontFamily: string;
-	marginBottom: number;
-	marginTop: number;
 	marginSide: number;
 	skipFirstPage: boolean;
 	color: string;
@@ -31,8 +29,6 @@ export const DEFAULT_SETTINGS: PdfPageNumbersSettings = {
 	customFormat: "Page {{page}} of {{total}}",
 	fontSize: 10,
 	fontFamily: "sans-serif",
-	marginBottom: 20,
-	marginTop: 20,
 	marginSide: 20,
 	skipFirstPage: false,
 	color: "#666666",
@@ -50,21 +46,35 @@ export class PdfPageNumbersSettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 		containerEl.empty();
 
-		containerEl.createEl("h2", { text: "PDF Page Numbers" });
+		new Setting(containerEl)
+			.setName("PDF page numbers")
+			.setHeading();
 
-		this.displayExportToggle(containerEl);
+		new Setting(containerEl)
+			.setName("Enable page numbers")
+			.setDesc(
+				"Add page numbers when exporting to PDF. Ensure your PDF export margins are large enough for the numbers to be visible."
+			)
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.enabled)
+					.onChange(async (value) => {
+						this.plugin.settings.enabled = value;
+						await this.plugin.saveSettings();
+					})
+			);
 
 		new Setting(containerEl)
 			.setName("Position")
 			.setDesc("Where to place page numbers on the page")
 			.addDropdown((dropdown) =>
 				dropdown
-					.addOption("bottom-center", "Bottom Center")
-					.addOption("bottom-left", "Bottom Left")
-					.addOption("bottom-right", "Bottom Right")
-					.addOption("top-center", "Top Center")
-					.addOption("top-left", "Top Left")
-					.addOption("top-right", "Top Right")
+					.addOption("bottom-center", "Bottom center")
+					.addOption("bottom-left", "Bottom left")
+					.addOption("bottom-right", "Bottom right")
+					.addOption("top-center", "Top center")
+					.addOption("top-left", "Top left")
+					.addOption("top-right", "Top right")
 					.setValue(this.plugin.settings.position)
 					.onChange(async (value) => {
 						this.plugin.settings.position =
@@ -86,7 +96,7 @@ export class PdfPageNumbersSettingTab extends PluginSettingTab {
 						this.plugin.settings.format =
 							value as PageNumberFormat;
 						await this.plugin.saveSettings();
-						this.display(); // re-render to show/hide custom format
+						this.display();
 					})
 			);
 
@@ -107,6 +117,8 @@ export class PdfPageNumbersSettingTab extends PluginSettingTab {
 				);
 		}
 
+		new Setting(containerEl).setName("Appearance").setHeading();
+
 		new Setting(containerEl)
 			.setName("Font size")
 			.setDesc("Font size in points")
@@ -123,7 +135,7 @@ export class PdfPageNumbersSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("Font family")
-			.setDesc("Font family for page numbers")
+			.setDesc("CSS font family for page numbers")
 			.addText((text) =>
 				text
 					.setPlaceholder("sans-serif")
@@ -149,49 +161,9 @@ export class PdfPageNumbersSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
-			.setName("Skip first page")
-			.setDesc("Don't show a page number on the first page")
-			.addToggle((toggle) =>
-				toggle
-					.setValue(this.plugin.settings.skipFirstPage)
-					.onChange(async (value) => {
-						this.plugin.settings.skipFirstPage = value;
-						await this.plugin.saveSettings();
-					})
-			);
-
-		new Setting(containerEl)
-			.setName("Bottom margin")
-			.setDesc("Distance from the bottom edge of the page")
-			.addSlider((slider) =>
-				slider
-					.setLimits(0, 80, 1)
-					.setValue(this.plugin.settings.marginBottom)
-					.setDynamicTooltip()
-					.onChange(async (value) => {
-						this.plugin.settings.marginBottom = value;
-						await this.plugin.saveSettings();
-					})
-			);
-
-		new Setting(containerEl)
-			.setName("Top margin")
-			.setDesc("Distance from the top edge of the page")
-			.addSlider((slider) =>
-				slider
-					.setLimits(0, 80, 1)
-					.setValue(this.plugin.settings.marginTop)
-					.setDynamicTooltip()
-					.onChange(async (value) => {
-						this.plugin.settings.marginTop = value;
-						await this.plugin.saveSettings();
-					})
-			);
-
-		new Setting(containerEl)
 			.setName("Side margin")
 			.setDesc(
-				"Horizontal padding in pixels (for left/right positions)"
+				"Horizontal padding in pixels for left or right positions"
 			)
 			.addSlider((slider) =>
 				slider
@@ -204,23 +176,8 @@ export class PdfPageNumbersSettingTab extends PluginSettingTab {
 					})
 			);
 
-		containerEl.createEl("p", {
-			text: "Tip: When exporting to PDF, make sure to set sufficient page margins in the export dialog so the page numbers have room to display.",
-			cls: "setting-item-description",
-		});
-	}
-
-	displayExportToggle(containerEl: HTMLElement) {
-		new Setting(containerEl)
-			.setName("Enable page numbers")
-			.setDesc("Add page numbers when exporting to PDF.")
-			.addToggle((toggle) =>
-				toggle
-					.setValue(this.plugin.settings.enabled)
-					.onChange(async (value) => {
-						this.plugin.settings.enabled = value;
-						await this.plugin.saveSettings();
-					})
-			);
+		new Setting(containerEl).setDesc(
+			"When exporting to PDF, set sufficient page margins in the export dialog so the page numbers have room to display."
+		);
 	}
 }
