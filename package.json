@@ -1,11 +1,12 @@
 {
 	"name": "obsidian-pdf-page-numbers",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "Obsidian plugin that adds page numbers to PDF exports",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
-		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+		"lint": "eslint src/**/*.ts",
+		"build": "npm run lint && tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
 		"version": "node version-bump.mjs"
 	},
 	"keywords": [],

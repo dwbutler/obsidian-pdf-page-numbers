@@ -1,5 +1,20 @@
 /* PDF Page Numbers Plugin Styles */
 
+.pdf-page-number {
+	display: block;
+	pointer-events: none;
+	-webkit-print-color-adjust: exact;
+	print-color-adjust: exact;
+}
+
+.pdf-page-number.skip {
+	visibility: hidden;
+}
+
+.pdf-page-numbers-page-container {
+	position: relative;
+}
+
 /* Settings tab styling */
 .pdf-page-numbers-preview {
 	border: 1px solid var(--background-modifier-border);
